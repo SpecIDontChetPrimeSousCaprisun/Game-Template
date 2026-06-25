@@ -386,8 +386,43 @@ void Object::afterUpdate() {}
 void Object::update() {
   beforeUpdate();
 
-  if (!anchored) {  
-    linearVelocity += glm::vec2(0.0f, gravity * (float)Window::deltaTime);
+  if (!anchored) {
+    glm::vec2 hitPoint;
+    float tHit;
+    std::vector<Object*> ignore;
+
+    ignore.push_back(this);
+
+    Object* result = raycast(
+      position + glm::vec2(size.x * 0.5f, size.y),
+      glm::vec2(0.0f, 0.5f),
+      hitPoint,
+      tHit,
+      ignore
+    );
+
+    Object* resultR = raycast(
+      position + glm::vec2(size.x - 1.0f, size.y),
+      glm::vec2(0.0f, 0.5f),
+      hitPoint,
+      tHit,
+      ignore
+    );
+
+    Object* resultL = raycast(
+      position + glm::vec2(1.0f, size.y),
+      glm::vec2(0.0f, 0.5f),
+      hitPoint,
+      tHit,
+      ignore
+    );
+
+    if (!result && !resultR & !resultL) {
+      linearVelocity += glm::vec2(0.0f, gravity * (float)Window::deltaTime);
+      std::cout << "NOT ON GROUND !!!!!!\n";
+    }
+
+    std::cout << "a\n";
 
     position += glm::vec2(linearVelocity.x * Window::deltaTime, linearVelocity.y * Window::deltaTime);
 
